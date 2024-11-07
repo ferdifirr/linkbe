@@ -1,0 +1,36 @@
+{
+  "name": "linkbe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/main.js",
+    "start": "node src/main.js",
+    "start-pm2": "pm2 start src/main.js --name api-rest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
+    "nodemon": "^3.1.7",
+    "prisma": "^4.16.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.16.2",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^4.16.2",
+    "winston": "^3.14.2",
+    "winston-daily-rotate-file": "^5.0.0",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=18.20.4"
+  }
+}

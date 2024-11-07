@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  id               Int          @id @default(autoincrement())
+  name             String       @db.VarChar(255)
+  description      String?      @db.Text
+  parentId         Int?
+  categories       categories?  @relation("categoriesTocategories", fields: [parentId], references: [id], onUpdate: NoAction, map: "categories_ibfk_1")
+  other_categories categories[] @relation("categoriesTocategories")
+  products         products[]
+
+  @@index([parentId], map: "parentId")
+}
+
+model products {
+  id                  Int        @id @default(autoincrement())
+  vendor_id           Int?
+  product_name        String     @db.VarChar(255)
+  product_image_path  String?    @db.VarChar(255)
+  product_description String?    @db.Text
+  product_price       Decimal    @db.Decimal(10, 2)
+  stock               Int
+  stock_unit          String?    @db.VarChar(255)
+  stock_description   String?    @db.Text
+  category_id         Int
+  vendors             vendors?   @relation(fields: [vendor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "products_ibfk_1")
+  categories          categories @relation(fields: [category_id], references: [id], onUpdate: NoAction, map: "products_ibfk_2")
+
+  @@index([category_id], map: "category_id")
+  @@index([vendor_id], map: "vendor_id")
+}
+
+model users {
+  id                 Int         @id @default(autoincrement())
+  username           String      @unique(map: "username") @db.VarChar(255)
+  email              String      @unique(map: "email") @db.VarChar(255)
+  password           String      @db.VarChar(255)
+  role               users_role? @default(user)
+  profile_image_path String?     @db.VarChar(255)
+  phone_number       String?     @db.VarChar(20)
+  name               String?     @db.VarChar(255)
+  created_at         DateTime?   @default(now()) @db.Timestamp(0)
+  vendors            vendors[]
+  sentMessages       Message[]   @relation("MessageSender")
+  receivedMessages   Message[]   @relation("MessageReceiver")
+}
+
+model vendors {
+  id            Int        @id @default(autoincrement())
+  user_id       Int?
+  business_name String     @db.VarChar(255)
+  description   String?    @db.Text
+  image_path    String?    @db.VarChar(255)
+  latitude      Float?
+  longitude     Float?
+  products      products[]
+  users         users?     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "vendors_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+enum users_role {
+  user
+  vendor
+}
+
+model Message {
+  id           Int      @id @default(autoincrement())
+  sender       String   @db.VarChar(255)
+  receiver     String   @db.VarChar(255)
+  message      String   @db.Text
+  sentAt       DateTime @default(now()) @db.Timestamp(0)
+  status       String   @default("pending") @db.VarChar(255)
+  senderUser   users    @relation("MessageSender", fields: [sender], references: [username])
+  receiverUser users    @relation("MessageReceiver", fields: [receiver], references: [username])
+}
